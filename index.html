@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Test With JavaScript / Shivam Jha</title>
+ 
+
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" class="input-field">
+        <div 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        class="content-box">
+            <div class="text-of-typing">
+                <p></p>
+            </div>
+            <div class="content">
+                <ul class="result">
+                    <li class="time">
+                        <p>Time</p>
+                        <span>60s</span>
+                    </li>
+                    <li class="errors">
+                        <p>Errors</p>
+                        <span>0</span>
+                    </li>
+                    <li class="wpm">
+                        <p>WPM</p>
+                        <span>0</span>
+                    </li>
+                    <li class="cpm">
+                        <p>CPM</p>
+                        <span>0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <button>Try Again</button>
+    </div>
+    <div class="toggle-container" onclick="toggleDayNight()">
+        <div class="toggle-text">NIGHT</div>
+        <div class="toggle-circle"></div>
+      </div>
+      <script>
+        // Toggle between day and night modes
+        function toggleDayNight() {
+          document.body.classList.toggle('day-mode');
+    
+          // Change background color of the body
+          if (document.body.classList.contains('day-mode')) {
+            document.body.style.backgroundColor = '#ffd68e'; // Day color
+            document.body.style.backgroundColor = '#ffd68e'; // Day color
+          } else {
+            document.body.style.backgroundColor = '#8e3c1f'; // Night color
+          }
+        }
+      </script>    
+  
+    <script >
+        const paragraphs = [
+"Pain's words emphasize the connection between suffering and peace, saying, ‘Those who do not understand true pain can never understand true peace.’ His philosophy forces others to face the cost of true understanding and challenges the ideals of the ninja world.",
+
+"Madara’s ideals reflect his belief in a peace imposed by force, saying, ‘Wake up to reality! Nothing ever goes as planned in this world.’ His vision of the Infinite Tsukuyomi represents an illusionary peace, free from the chaos he believes is inescapable in the real world.",
+
+"Obito represents the disillusionment of lost hope, declaring, ‘In this world, wherever there is light, there are also shadows.’ His descent into darkness highlights his view that joy and suffering are forever bound, and peace is an impossible ideal.",
+
+"Itachi believes truth is subjective and shaped by perception, saying, ‘People live their lives bound by what they accept as correct and true.’ His words reveal an acceptance of sacrifice and duty, guiding others to understand identity beyond illusions.",
+
+"Pain believes that to understand peace, one must endure suffering, as he says, ‘Those who do not understand true pain can never understand true peace.’ He views pain as the path to empathy and an end to the cycle of hate.",
+
+"Madara’s dream of peace through the Infinite Tsukuyomi is ultimately an illusion, reflecting his belief that humanity’s nature is too flawed for true peace. He warns, ‘Wake up to reality! Nothing ever goes as planned in this world",
+
+"Obito views light and darkness as inseparable forces, saying, ‘In this world, wherever there is light, there are also shadows.’ His journey from an idealist to a villain underscores the unavoidable balance of joy and sorrow.",
+
+"Itachi’s wisdom speaks to sacrifice and identity, and he says, ‘People live their lives bound by what they accept as correct and true.’ His understanding of truth goes beyond appearances, accepting the burdens he carries to protect others.",
+
+"Each character's philosophy challenges Naruto’s resolve for true peace, forcing him to question his ideals and strength. Through their painful experiences, they reveal to him the sacrifices that may be needed to achieve his dreams.",
+
+
+
+
+
+
+
+
+        ]
+    </script>
+    <script >
+        const typing_text = document.querySelector('.text-of-typing p');
+const inputField = document.querySelector('.container .input-field');
+const errorTag = document.querySelector('.errors span');
+const timeTag = document.querySelector('.time span');
+const wpmTag = document.querySelector('.wpm span');
+const cpmTag = document.querySelector('.cpm span');
+const button = document.querySelector('button');
+
+let characterIndex = 0;
+let errors = 0;
+let timer;
+let maxTime = 60;
+let timeLeft = maxTime;
+let isTyping = 0;
+
+function randomParagraph(){
+    let randomIndex = Math.floor(Math.random() * paragraphs.length);
+    
+    typing_text.innerHTML = "";
+
+    paragraphs[randomIndex].split("").forEach((span) => {
+        let spanTag = `<span>${span}</span>`;
+        typing_text.innerHTML += spanTag;
+    });
+
+    typing_text.querySelectorAll('span')[0].classList.add('active');
+
+    document.addEventListener('keydown', () => inputField.focus());
+    typing_text.addEventListener('click', () => inputField.focus());
+}
+randomParagraph();
+
+function initTyping(){
+    const characters = typing_text.querySelectorAll('span');
+    
+    let typedCharacter = inputField.value.split("")[characterIndex];
+
+    if(characterIndex < characters.length - 1 && timeLeft > 0){
+        if(!isTyping){
+            timer = setInterval(initTimer, 1000);
+            isTyping = true;   
+        }
+    
+        if(typedCharacter == null){//if user typed backspace
+            characterIndex--;
+    
+            if(characters[characterIndex].classList.contains('incorrect')){
+                errors--;
+            }
+    
+            characters[characterIndex].classList.remove('correct', 'incorrect');
+        }
+        else{
+            if(characters[characterIndex].innerText === typedCharacter){
+                characters[characterIndex].classList.add('correct')
+            }
+            else{
+                errors++
+                characters[characterIndex].classList.add('incorrect')
+            }
+            characterIndex++;
+        }
+    
+    
+        characters.forEach(span => span.classList.remove('active'));
+        characters[characterIndex].classList.add('active');
+    
+        errorTag.innerText = errors;
+    
+        cpmTag.innerText = characterIndex - errors;//cpm will not count errors
+    
+        let wpm = Math.round((((characterIndex - errors) / 5) / (maxTime - timeLeft)) * 60);
+        wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
+        wpmTag.innerText = wpm;
+    }
+    else{
+        inputField.value = "";
+        clearInterval(timer);
+    }
+    
+}
+
+inputField.addEventListener('input', initTyping);
+
+function initTimer(){
+    if(timeLeft > 0){
+        timeLeft--;
+        timeTag.innerText = timeLeft;
+    }else{
+        clearInterval(timer);
+    }
+}
+
+function resetGame(){
+    randomParagraph()
+    inputField.value = "";
+    clearInterval(timer);
+    timeLeft = maxTime;
+    characterIndex = 0;
+    errors = 0;
+    isTyping = 0;
+    timeTag.innerText = timeLeft;
+    errorTag.innerText = errors;
+    wpmTag.innerText = 0;
+    cpmTag.innerText = 0;
+}
+
+button.addEventListener('click', resetGame);
+    </script>
+</body>
+
+</html>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.toggle-container {
+      display: flex;
+      align-items: center;
+      background-color: #8e3c1f; /* Initial night color */
+      border-radius: 25px;
+      padding: 5px;
+      width: 150px;
+      height: 60px;
+      box-shadow: 10px 10px 10px (0,0,0,0.5) ;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.5s ease;
+    }
+
+    /* Text */
+    .toggle-text {
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+      position: absolute;
+      left: 10px;
+      transition: opacity 0.5s ease;
+    }
+
+    /* Toggle Circle */
+    .toggle-circle {
+      width: 50px;
+      height: 50px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      right: 5px;
+      transition: all 0.5s ease;
+    }
+
+    /* Day mode styling */
+    .day-mode .toggle-container {
+      background-color: #ffd68e;
+    }
+
+    .day-mode .toggle-text {
+      opacity: 0;
+    }
+
+    .day-mode .toggle-circle {
+      right: 85px; /* Move to the left in day mode */
+    }
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+background-color: #8e3c1f;
+}
+
+.container {
+    /* background: linear-gradient(160deg, rgb(194, 99, 45), rgb(0,0,0)); */
+    background-color: #8e3c1f;
+    color: #fff;
+    width: 800px;
+    border-radius: 10px;
+    padding: 30px;
+    position: relative;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgb(0,0,0, 1);
+}
+.container .input-field {
+    z-index: -999;
+    opacity: 0;
+    position: absolute;
+}
+.content-box .text-of-typing {
+    max-height: 255px;
+    max-width: 600px;
+    overflow-y: auto;
+}
+.content-box .text-of-typing::-webkit-scrollbar {
+    width: 0;
+}
+.content-box .text-of-typing p {
+    text-align: justify;
+    font-size: 23px;
+    letter-spacing: 1px;
+    word-break: break-all;
+}
+.content-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.content-box .content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 17%;
+    text-align: center;
+    line-height: 32px;
+}
+.content .result {
+    padding: 19px;
+    border-radius: 10px;
+    background: linear-gradient(160deg, rgb(226, 138, 37), rgb(82, 33, 33));
+    display: block;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    box-shadow: 0 0 10px rgb(0,0,0, 1);
+}
+.content .result li {
+    border-bottom: 1px solid #ccc;
+    list-style: none;
+}
+.content .result li:last-child {
+    border-bottom: none;
+}
+
+.result li.time,
+.result li.errors,
+.result li.wpm,
+.result li.cpm {
+    font-size: 17px;
+}
+.result li.time p,
+.result li.errors p, 
+.result li.wpm p,
+.result li.cpm p{
+    font-weight: 600;
+}
+
+.container button {
+    width: 71%;
+    position: absolute;
+    height: 17%;
+    border: none;
+    background-color: #000;
+    color: #fff;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(160deg, rgb(226, 138, 37), rgb(82, 33, 33));
+}
+.container button:hover {
+    background: rgb(126, 76, 20);
+}
+#colorButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+.text-of-typing p span.correct {
+    color: rgb(15, 235, 15);
+}
+.text-of-typing p span.incorrect {
+    color: rgb(236, 25, 25);
+}
+
+.text-of-typing p span.active {
+    color: #979494;
+}
+.text-of-typing p span.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: #9af902;
+    animation: blink 1s ease-in-out infinite;
+    opacity: 0;
+}
+@keyframes blink {
+    50% {
+        opacity: 1;
+    }
+}
+.text-of-typing p span {
+    position: relative;
+}
+</style>
